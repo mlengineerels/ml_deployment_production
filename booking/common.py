@@ -48,11 +48,8 @@ class FeatureStoreTableConfig:
         database_name (str)
             Name of database to use for creating the feature table
         table_name (str)
-            Name of feature table
-        primary_keys (string or list)
-            String or list of strings, of columns to use as the primary key(s). Use single column (customerID) as the
-            primary key for the telco churn example.
-        description (str)
+            Name of feature table within the database
+        description (str)   
             [Optional] string containing description to attribute to the feature table in the Feature Store.
             Only used when creating a Feature Store table.
     """

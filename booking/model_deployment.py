@@ -28,7 +28,7 @@ class ModelDeploymentConfig:
     """
     mlflow_tracking_cfg: MLflowTrackingConfig
     reference_data: str
-    label_col: str = 'churn'
+    label_col: str = 'booking_status'
     comparison_metric: str = 'roc_auc_score'
     higher_is_better: bool = True
 
