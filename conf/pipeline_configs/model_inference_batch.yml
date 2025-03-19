@@ -4,7 +4,7 @@ mlflow_params:
 data_input:
   # Require DataFrame to score the model on - must contain column(s) for lookup keys
   # to join feature data from Feature Store
-  table_name: 'booking.booking_status_labels'
+  table_name: 'dev.booking_status_labels'
 
 data_output:
   mode: 'overwrite'
