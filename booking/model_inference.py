@@ -1,121 +1,123 @@
 import pyspark.sql.dataframe
-from databricks.feature_store import FeatureStoreClient
 from pyspark.sql import SparkSession
+import mlflow
 from booking.utils.logger_utils import get_logger
 
 _logger = get_logger()
 
+# Create a SparkSession for inference
+spark = SparkSession.builder.appName('modelinference').getOrCreate()
 
 class ModelInference:
     """
     Class to execute model inference.
-    Apply the model at the specified URI for batch inference on the table with name input_table_name,
-    writing results to the table with name output_table_name
+    Applies the model at the specified URI for batch inference on the input table,
+    joining with feature data from a Delta table based on lookup keys.
+    The results are written to the output table if specified.
     """
-    def __init__(self, model_uri: str, input_table_name: str, output_table_name: str = None):
+    def __init__(self, model_uri: str, input_table_name: str, feature_table_name: str, lookup_keys: list, output_table_name: str = None):
         """
-
         Parameters
         ----------
         model_uri : str
-            MLflow model uri. Model model must have been logged using the Feature Store API
+            MLflow model URI. The model must have been logged using mlflow.sklearn.log_model.
         input_table_name : str
-            Table name to load as a Spark DataFrame to score the model on. Must contain column(s)
-            for lookup keys to join feature data from Feature Store
-        output_table_name : str
-            Output table name to write results to
+            Table name to load as a Spark DataFrame containing lookup keys for joining feature data.
+        feature_table_name : str
+            Delta table name containing the feature data.
+        lookup_keys : list
+            List of column names to use as join keys between the input table and the feature table.
+        output_table_name : str, optional
+            Output table name to write predictions to.
         """
         self.model_uri = model_uri
         self.input_table_name = input_table_name
+        self.feature_table_name = feature_table_name
+        self.lookup_keys = lookup_keys
         self.output_table_name = output_table_name
 
-    def _load_input_table(self) -> pyspark.sql.DataFrame:
+    def _load_input_table(self) -> pyspark.sql.dataframe.DataFrame:
         """
-        Load Spark DataFrame containing lookup keys to join feature data from Feature Store
-
+        Loads the input table as a Spark DataFrame.
+        
         Returns
         -------
-        pyspark.sql.DataFrame
+        pyspark.sql.dataframe.DataFrame
+            Input DataFrame containing lookup keys.
         """
-        input_table_name = self.input_table_name
-        _logger.info(f"Loading lookup keys from input table: {input_table_name}")
-        return spark.table(input_table_name)
+        _logger.info(f"Loading input table: {self.input_table_name}")
+        return spark.table(self.input_table_name)
 
-    def fs_score_batch(self, df: pyspark.sql.DataFrame) -> pyspark.sql.DataFrame:
+    def score_batch(self, df: pyspark.sql.dataframe.DataFrame) -> pyspark.sql.dataframe.DataFrame:
         """
-        Load and apply model from MLflow Model Registry using Feature Store API. Features will be automatically
-        retrieved from the Feature Store. This method requires that the registered model must have been logged
-        with FeatureStoreClient.log_model(), which packages the model with feature metadata. Unless present in df ,
-        these features will be looked up from Feature Store and joined with df prior to scoring the model.
-
+        Joins the input DataFrame with the feature table on lookup keys, loads the model from MLflow,
+        and applies it to perform predictions.
+        
         Parameters
         ----------
-        df : pyspark.sql.DataFrame
-            The DataFrame to score the model on. Feature Store features will be joined with df prior to scoring the
-                model. df must:
-
-                    1. Contain columns for lookup keys required to join feature data from Feature Store, as specified in
-                       the feature_spec.yaml artifact.
-                    2. Contain columns for all source keys required to score the model, as specified in the
-                       feature_spec.yaml artifact.
-                    3. Not contain a column prediction, which is reserved for the modelʼs predictions. df may contain
-                       additional columns.
-
+        df : pyspark.sql.dataframe.DataFrame
+            Input DataFrame containing lookup keys.
+        
         Returns
         -------
-        pyspark.sql.DataFrame:
-            A Spark DataFrame containing:
-                1. All columns of df.
-                2. All feature values retrieved from Feature Store.
-                3. A column prediction containing the output of the model.
+        pyspark.sql.dataframe.DataFrame
+            A Spark DataFrame with all original columns and an added 'prediction' column.
         """
-        fs = FeatureStoreClient()
-        _logger.info(f"Loading model from Model Registry: {self.model_uri}")
+        _logger.info(f"Loading feature table: {self.feature_table_name}")
+        feature_df = spark.table(self.feature_table_name)
 
-        return fs.score_batch(self.model_uri, df)
+        _logger.info(f"Joining input DataFrame with feature table on keys: {self.lookup_keys}")
+        joined_df = df.join(feature_df, on=self.lookup_keys, how='inner')
 
-    def run_batch(self) -> pyspark.sql.DataFrame:
+        _logger.info("Converting joined DataFrame to pandas for scoring")
+        pandas_df = joined_df.toPandas()
+
+        _logger.info(f"Loading model from MLflow: {self.model_uri}")
+        model = mlflow.sklearn.load_model(self.model_uri)
+
+        _logger.info("Performing predictions using the loaded model")
+        predictions = model.predict(pandas_df)
+
+        _logger.info("Appending predictions to the DataFrame")
+        pandas_df['prediction'] = predictions
+
+        _logger.info("Converting pandas DataFrame back to Spark DataFrame")
+        return spark.createDataFrame(pandas_df)
+
+    def run_batch(self) -> pyspark.sql.dataframe.DataFrame:
         """
-        Load inference lookup keys, feature data from Feature Store, and score using the loaded model from MLflow
-        model registry
-
+        Runs batch inference by loading input data, joining with feature data, and scoring the model.
+        
         Returns
         -------
-        pyspark.sql.DataFrame:
-            A Spark DataFrame containing:
-                1. All columns of inference df.
-                2. All feature values retrieved from Feature Store.
-                3. A column prediction containing the output of the model.
+        pyspark.sql.dataframe.DataFrame
+            A DataFrame containing the original input data, feature values, and a 'prediction' column.
         """
         input_df = self._load_input_table()
-        pred_df = self.fs_score_batch(input_df)
-
+        pred_df = self.score_batch(input_df)
         return pred_df
 
     def run_and_write_batch(self, mode: str = 'overwrite') -> None:
         """
-        Run batch inference, save as Delta table to `self.output_table_name`
-
+        Executes batch inference and writes the predictions to a Delta table.
+        
         Parameters
         ----------
-        mode : str
-            Specify behavior when predictions data already exists.
-                        Options include:
-                            * "append": Append contents of this :class:`DataFrame` to existing data.
-                            * "overwrite": Overwrite existing data.
-
-        Returns
-        -------
-
+        mode : str, optional
+            Write mode. Options include:
+                - "append": Append to existing data.
+                - "overwrite": Overwrite existing data.
         """
-        _logger.info("==========Running batch model inference==========")
+        _logger.info("========== Running batch model inference ==========")
         pred_df = self.run_batch()
 
-        _logger.info("==========Writing predictions==========")
-        _logger.info(f"mode={mode}")
-        _logger.info(f"Predictions written to {self.output_table_name}")
-        # Model predictions are written to the Delta table provided as input.
-        # Delta is the default format in Databricks Runtime 8.0 and above.
+        if self.output_table_name is None:
+            raise ValueError("output_table_name must be specified to write predictions.")
+
+        _logger.info("========== Writing predictions ==========")
+        _logger.info(f"Write mode: {mode}")
+        _logger.info(f"Writing predictions to table: {self.output_table_name}")
+
         pred_df.write.format("delta").mode(mode).saveAsTable(self.output_table_name)
 
-        _logger.info("==========Batch model inference completed==========")
+        _logger.info("========== Batch model inference completed ==========")
