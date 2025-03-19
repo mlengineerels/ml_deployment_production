@@ -1,16 +1,18 @@
 from dataclasses import dataclass
 
 import pyspark.sql.dataframe
-
-from booking import featurize
+from pyspark.sql import SparkSession
+from booking import features as featurize
 from booking.common import FeatureStoreTableConfig, LabelsTableConfig
-from booking.featurize import FeaturizerConfig
+from booking.features import FeaturizerConfig
 from booking.utils import feature_store_utils
-from booking.utils.get_spark import spark
+# from booking.utils.get_spark import spark
 from booking.utils.logger_utils import get_logger
 
 _logger = get_logger()
-
+spark = SparkSession.builder \
+    .appName("YourAppName") \
+    .getOrCreate()
 
 @dataclass
 class FeatureTableCreatorConfig:
@@ -52,7 +54,7 @@ class FeatureTableCreator:
             Drop table if it already exists
         """
         _logger.info(f'Creating database {database_name} if not exists')
-        spark.sql(f'CREATE DATABASE IF NOT EXISTS {database_name};')
+        spark.sql(f"""CREATE DATABASE IF NOT EXISTS {database_name};""")
         spark.sql(f'USE {database_name};')
         spark.sql(f'DROP TABLE IF EXISTS {table_name};')
 
@@ -112,7 +114,7 @@ class FeatureTableCreator:
         features_df = df.drop(self.cfg.labels_table_cfg.label_col)
         feature_table_name = f'{feature_store_table_cfg.database_name}.{feature_store_table_cfg.table_name}'
         _logger.info(f'Creating and writing features to feature table: {feature_table_name}')
-        feature_store_utils.create_and_write_feature_table(features_df,
+        feature_store_utils.create_and_write_delta_table(features_df,
                                                            feature_table_name,
                                                            primary_keys=feature_store_table_cfg.primary_keys,
                                                            description=feature_store_table_cfg.description)
@@ -151,6 +153,7 @@ class FeatureTableCreator:
         labels_df.write.format('delta').mode('overwrite').save(labels_dbfs_path)
         spark.sql(f"""CREATE TABLE {labels_database_name}.{labels_table_name}
                       USING DELTA LOCATION '{labels_dbfs_path}';""")
+        # labels_df.write.format('delta').mode('overwrite').save(labels_dbfs_path)
         _logger.info(f'Created labels table: {labels_database_name}.{labels_table_name}')
 
     def run(self) -> None:
