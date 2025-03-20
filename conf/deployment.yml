@@ -68,8 +68,6 @@ environments:
         tasks:
           - task_key: 'feature-table-creation'
             <<: *prod-cluster-config
-            depends_on:
-              - task_key: 'demo-setup'
             spark_python_task:
               python_file: 'file://booking/pipelines/feature_table_creator_job.py'
               parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
@@ -78,7 +76,6 @@ environments:
           - task_key: 'model-train'
             <<: *prod-cluster-config
             depends_on:
-              - task_key: 'demo-setup'
               - task_key: 'feature-table-creation'
             spark_python_task:
               python_file: 'file://booking/pipelines/model_train_job.py'
