@@ -2,7 +2,7 @@ custom:
 
   # Use an existing cluster configuration instead of launching a new cluster.
   existing-cluster-spec: &existing-cluster-spec
-    existing_cluster_id: ${{ secrets.CLUSTER_ID }}
+    existing_cluster_id: '0318-054842-13ehc8t5'
 
   dev-cluster-config: &dev-cluster-config
     <<: *existing-cluster-spec

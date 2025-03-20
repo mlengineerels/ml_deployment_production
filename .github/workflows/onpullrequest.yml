@@ -48,6 +48,6 @@ jobs:
         run: |
           dbx deploy --jobs=STAGING-booking-sample-integration-test --environment=staging --files-only
 
-      # - name: Run integration test [staging environment]
-      #   run: |
-      #     dbx launch --job=STAGING-booking-sample-integration-test --environment=staging --as-run-submit --trace
+      - name: Run integration test [staging environment]
+        run: |
+          dbx launch --job=STAGING-booking-sample-integration-test --environment=staging --as-run-submit --trace
