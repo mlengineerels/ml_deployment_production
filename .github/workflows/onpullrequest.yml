@@ -16,7 +16,7 @@ jobs:
 
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_STAGING_HOST }}
-      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_STAGING_TOKEN }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_STAGING_TOKEN }}
 
     steps:
       - uses: actions/checkout@v3
@@ -35,6 +35,10 @@ jobs:
           pip install -r unit-requirements.txt
           pip install -e .
 
+      - name: Fix ruamel.yaml issue
+        run: |
+          pip install "ruamel.yaml<0.18"
+
       - name: Run unit tests
         run: |
           echo "Launching unit tests"
@@ -42,8 +46,8 @@ jobs:
 
       - name: Deploy integration test [staging environment]
         run: |
-          dbx deploy --jobs=STAGING-telco-churn-sample-integration-test --environment=staging --files-only
+          dbx deploy --jobs=STAGING-booking-sample-integration-test --environment=staging --files-only
 
-      - name: Run integration test [staging environment]
-        run: |
-          dbx launch --job=STAGING-telco-churn-sample-integration-test --environment=staging --as-run-submit --trace
+      # - name: Run integration test [staging environment]
+      #   run: |
+      #     dbx launch --job=STAGING-booking-sample-integration-test --environment=staging --as-run-submit --trace

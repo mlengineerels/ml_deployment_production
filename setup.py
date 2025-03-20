@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 from booking import __version__
 
 setup(
-    name='telco_churn',
+    name='booking',
     packages=find_packages(exclude=['tests', 'tests.*']),
     setup_requires=['wheel'],
     version=__version__,
