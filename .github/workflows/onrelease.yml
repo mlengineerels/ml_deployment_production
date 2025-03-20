@@ -1,0 +1,66 @@
+name: Release pipeline
+
+on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - 'v*' # this tag type is used for release pipelines
+
+jobs:
+  release-pipeline:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [ 3.9 ]
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_PROD_HOST }}
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_PROD_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install pip
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Fix ruamel.yaml issue
+        run: |
+          pip install "ruamel.yaml<0.18"
+
+      - name: Install dependencies and project
+        run: |
+          pip install -r unit-requirements.txt
+
+      - name: Deploy PROD-booking-model-train job [prod environment]
+        run: |
+          dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-model-train --environment=prod
+
+      - name: Deploy PROD-booking-model-deployment job [prod environment]
+        run: |
+          dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-model-deployment --environment=prod
+
+      - name: Deploy PROD-booking-model-inference-batch job [prod environment]
+        run: |
+          dbx deploy --booking-file conf/deployment.yml --jobs=PROD-booking-model-inference-batch --environment=prod
+
+      # - name: Create Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      #   with:
+      #     tag_name: ${{ github.ref }}
+      #     release_name: ${{ github.ref }}
+      #     body: |
+      #       Release for version ${{ github.ref }}.
+      #     draft: false
+      #     prerelease: false
