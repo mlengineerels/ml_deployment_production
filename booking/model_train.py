@@ -5,7 +5,6 @@ from pyspark.sql import DataFrame, SparkSession
 import pandas as pd
 import sklearn
 from sklearn.model_selection import train_test_split
-import mlflow
 from mlflow.models import infer_signature
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
