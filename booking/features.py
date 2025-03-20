@@ -17,7 +17,7 @@ class FeaturizerConfig:
         cat_cols (list): List of categorical columns. Only required if ohe=True
         drop_missing (bool): Flag to indicate whether or not to drop missing values
     """
-    label_col: str = 'churnString'
+    label_col: str = 'booking_status'
     ohe: bool = False
     cat_cols: list = None
     drop_missing: bool = True
@@ -48,7 +48,7 @@ class Featurizer:
         """
         return ps.get_dummies(psdf, columns=cat_cols, dtype='int64')
 
-    def process_label(self, psdf: pyspark.pandas.DataFrame, rename_to: str = 'churn') -> pyspark.pandas.DataFrame:
+    def process_label(self, psdf: pyspark.pandas.DataFrame, rename_to: str = 'booking_status') -> pyspark.pandas.DataFrame:
         """
         Convert label to int and rename label column
         TODO: add test
@@ -63,7 +63,7 @@ class Featurizer:
         -------
         pyspark.pandas.DataFrame
         """
-        psdf[self.cfg.label_col] = psdf[self.cfg.label_col].map({'Yes': 1, 'No': 0})
+        psdf[self.cfg.label_col] = psdf[self.cfg.label_col].map({'Canceled': 1, 'Not_Canceled': 0})
         psdf = psdf.astype({self.cfg.label_col: 'int32'})
         psdf = psdf.rename(columns={self.cfg.label_col: rename_to})
 
@@ -110,7 +110,7 @@ class Featurizer:
         Run all data preprocessing steps. Consists of the following:
     
             1. Convert PySpark DataFrame to pandas_on_spark DataFrame 
-            2. Process the label column - converting to int and renaming col to 'churn'
+            2. Process the label column - converting to int and renaming col to 'booking_status'
             3. Apply OHE if specified in the config
             4. Drop any missing values if specified in the config
             5. Return resulting preprocessed dataset as a PySpark DataFrame
@@ -132,7 +132,7 @@ class Featurizer:
 
         # Convert label to int and rename column
         _logger.info(f'Processing label: {self.cfg.label_col}')
-        psdf = self.process_label(psdf, rename_to='churn')
+        psdf = self.process_label(psdf, rename_to='booking_status')
 
         # OHE
         if self.cfg.ohe:
