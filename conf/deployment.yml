@@ -24,35 +24,35 @@ environments:
         <<: *dev-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/curated_table_creator_job.py'
-          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/feature_table_creator.yml']
       - name: 'DEV-booking-model-train'
         <<: *dev-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_train_job.py'
-          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'DEV-booking-model-deployment'
         <<: *dev-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_deployment_job.py'
-          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_deployment.yml']
       - name: 'DEV-booking-inference-batch'
         <<: *dev-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_inference_batch_job.py'
-          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_inference_batch.yml']
       - name: 'DEV-booking-sample-integration-test'
         <<: *dev-cluster-config
         spark_python_task:
           python_file: 'file://tests/integration/sample_test.py'
-          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/sample_test.yml']
 
@@ -73,7 +73,7 @@ environments:
         <<: *prod-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/demo_setup_job.py'
-          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/prod/.prod.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
       - name: 'PROD-booking-initial-model-train-register'
@@ -82,7 +82,7 @@ environments:
             <<: *prod-cluster-config
             spark_python_task:
               python_file: 'file://booking/pipelines/demo_setup_job.py'
-              parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+              parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                            '--env', 'file:fuse://conf/prod/.prod.env',
                            '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
           - task_key: 'feature-table-creation'
@@ -91,7 +91,7 @@ environments:
               - task_key: 'demo-setup'
             spark_python_task:
               python_file: 'file://booking/pipelines/feature_table_creator_job.py'
-              parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+              parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                            '--env', 'file:fuse://conf/prod/.prod.env',
                            '--conf-file', 'file:fuse://conf/pipeline_configs/feature_table_creator.yml']
           - task_key: 'model-train'
@@ -101,27 +101,27 @@ environments:
               - task_key: 'feature-table-creation'
             spark_python_task:
               python_file: 'file://booking/pipelines/model_train_job.py'
-              parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+              parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                            '--env', 'file:fuse://conf/prod/.prod.env',
                            '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'PROD-booking-model-train'
         <<: *prod-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_train_job.py'
-          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/prod/.prod.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'PROD-booking-model-deployment'
         <<: *prod-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_deployment_job.py'
-          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/prod/.prod.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_deployment.yml']
       - name: 'PROD-booking-model-inference-batch'
         <<: *prod-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_inference_batch_job.py'
-          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/prod/.prod.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_inference_batch.yml']
