@@ -64,23 +64,8 @@ environments:
   prod:
     strict_path_adjustment_policy: true
     jobs:
-      - name: 'PROD-booking-demo-setup'
-        <<: *prod-cluster-config
-        spark_python_task:
-          python_file: 'file://booking/pipelines/demo_setup_job.py'
-          parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
-                       '--env', 'file:fuse://conf/prod/.prod.env',
-                       '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
       - name: 'PROD-booking-initial-model-train-register'
         tasks:
-          - task_key: 'demo-setup'
-            <<:
-              - *prod-cluster-config
-            spark_python_task:
-              python_file: 'file://booking/pipelines/demo_setup_job.py'
-              parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
-                           '--env', 'file:fuse://conf/prod/.prod.env',
-                           '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
           - task_key: 'feature-table-creation'
             <<: *prod-cluster-config
             depends_on:
