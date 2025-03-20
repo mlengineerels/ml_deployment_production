@@ -1,4 +1,4 @@
-from telco_churn.common import Workload
+from booking.common import Workload
 
 
 class SampleJob(Workload):
