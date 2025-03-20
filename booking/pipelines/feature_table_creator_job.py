@@ -1,6 +1,6 @@
 from booking.common import Workload, FeatureStoreTableConfig, LabelsTableConfig
 from booking.feature_table_creator import FeatureTableCreator, FeatureTableCreatorConfig
-from booking.featurize import FeaturizerConfig
+from booking.features import FeaturizerConfig
 from booking.utils.logger_utils import get_logger
 
 _logger = get_logger()
