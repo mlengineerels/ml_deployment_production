@@ -16,7 +16,7 @@ jobs:
 
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_STAGING_HOST }}
-      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_STAGING_TOKEN }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_STAGING_TOKEN }}
 
     steps:
       - uses: actions/checkout@v3
@@ -34,6 +34,10 @@ jobs:
         run: |
           pip install -r unit-requirements.txt
           pip install -e .
+
+      - name: Fix ruamel.yaml issue
+        run: |
+          pip install "ruamel.yaml<0.18"
 
       - name: Run unit tests
         run: |
