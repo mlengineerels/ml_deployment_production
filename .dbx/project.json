@@ -1,17 +1,17 @@
 {
     "environments": {
         "dev": {
-            "profile": "e2-demo-west",
+            "profile": "e2-east",
             "workspace_dir": "/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_dev",
             "artifact_location": "dbfs:/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_dev"
         },
         "staging": {
-            "profile": "e2-demo-west",
-            "workspace_dir": "/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_dev",
-            "artifact_location": "dbfs://Shared/ml_deployment_production/dev/dbx/ml_deployment_production_staging"
+            "profile": "e2-east",
+            "workspace_dir": "/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_staging",
+            "artifact_location": "dbfs:/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_staging"
         },
         "prod": {
-            "profile": "e2-demo-west",
+            "profile": "e2-east",
             "workspace_dir":  "/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_prod",
             "artifact_location": "dbfs://Shared/ml_deployment_production/dev/dbx/ml_deployment_production_prod"
         }
