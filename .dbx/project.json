@@ -13,7 +13,7 @@
         "prod": {
             "profile": "e2-east",
             "workspace_dir":  "/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_prod",
-            "artifact_location": "dbfs://Shared/ml_deployment_production/dev/dbx/ml_deployment_production_prod"
+            "artifact_location": "dbfs:/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_prod"
         }
     }
 }
