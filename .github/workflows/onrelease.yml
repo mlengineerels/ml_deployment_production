@@ -40,13 +40,12 @@ jobs:
         run: |
           pip install -r unit-requirements.txt
 
-      - name: Deploy PROD-booking-model-train job [prod environment]
-        run: |
-          dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-model-train --environment=prod
 
-      - name: Deploy PROD-booking-model-deployment job [prod environment]
+
+
+      - name: Deploy PROD-booking-initial-model-train-register job [prod environment]
         run: |
-          dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-model-deployment --environment=prod
+          dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-initial-model-train-register --environment=prod
 
       - name: Deploy PROD-booking-model-inference-batch job [prod environment]
         run: |
