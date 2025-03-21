@@ -26,24 +26,21 @@ environments:
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/feature_table_creator.yml']
       - name: 'DEV-booking-model-train'
-        <<:
-          - *dev-cluster-config
+        <<: *dev-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_train_job.py'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'DEV-booking-model-inference-batch'
-        <<:
-          - *dev-cluster-config
+        <<: *dev-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_inference_batch_job.py'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_inference_batch.yml']
       - name: 'DEV-booking-sample-integration-test'
-        <<:
-          - *dev-cluster-config
+        <<: *dev-cluster-config
         spark_python_task:
           python_file: 'file://tests/integration/sample_test.py'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
@@ -54,8 +51,7 @@ environments:
     strict_path_adjustment_policy: true
     jobs:
       - name: 'STAGING-booking-sample-integration-test'
-        <<:
-          - *staging-cluster-config
+        <<: *staging-cluster-config
         spark_python_task:
           python_file: 'file://tests/integration/sample_test.py'
           parameters: ['--env', 'file:fuse://conf/staging/.staging.env',
@@ -79,16 +75,14 @@ environments:
                            '--env', 'file:fuse://conf/staging/.staging.env',
                            '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'STAGING-booking-model-train'
-        <<:
-          - *prod-cluster-config
+        <<: *prod-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_train_job.py'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/staging/.staging.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'STAGING-booking-model-inference-batch'
-        <<:
-          - *prod-cluster-config
+        <<: *prod-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_inference_batch_job.py'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
@@ -99,6 +93,9 @@ environments:
     strict_path_adjustment_policy: true
     jobs:
       - name: 'PROD-booking-initial-model-train-register'
+        schedule:
+          quartz_cron_expression: "0 0 23 1 * ?"
+          timezone_id: "UTC"
         tasks:
           - task_key: 'feature-table-creation'
             <<: *prod-cluster-config
@@ -117,16 +114,17 @@ environments:
                            '--env', 'file:fuse://conf/prod/.prod.env',
                            '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'PROD-booking-model-train'
-        <<:
-          - *prod-cluster-config
+        <<: *prod-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_train_job.py'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
                        '--env', 'file:fuse://conf/prod/.prod.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'PROD-booking-model-inference-batch'
-        <<:
-          - *prod-cluster-config
+        schedule:
+          quartz_cron_expression: "0 0 23 * * ?"
+          timezone_id: "UTC"
+        <<: *prod-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_inference_batch_job.py'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_parameters.env',
