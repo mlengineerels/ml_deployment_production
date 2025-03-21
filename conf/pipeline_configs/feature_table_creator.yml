@@ -1,7 +1,5 @@
 input_table: 'delta_db.booking'
 data_prep_params:
   label_col: 'booking_status'
-  ohe: False
-#  cat_cols: ['market_segment_type', 'type_of_meal', 'room_type',
-#             'market_segment_type', 'date_of_reservation'] 
+  ohe: True
   drop_missing: False

@@ -7,13 +7,13 @@
         },
         "staging": {
             "profile": "e2-east",
-            "workspace_dir": "/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_staging",
-            "artifact_location": "dbfs:/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_staging"
+            "workspace_dir": "/Shared/ml_deployment_production/staging/dbx/ml_deployment_production_staging",
+            "artifact_location": "dbfs:/Shared/ml_deployment_production/staging/dbx/ml_deployment_production_staging"
         },
         "prod": {
             "profile": "e2-east",
-            "workspace_dir":  "/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_prod",
-            "artifact_location": "dbfs:/Shared/ml_deployment_production/dev/dbx/ml_deployment_production_prod"
+            "workspace_dir":  "/Shared/ml_deployment_production/prod/dbx/ml_deployment_production_prod",
+            "artifact_location": "dbfs:/Shared/ml_deployment_production/prod/dbx/ml_deployment_production_prod"
         }
     }
 }
