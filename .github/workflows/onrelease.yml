@@ -48,16 +48,3 @@ jobs:
       - name: Deploy PROD-booking-model-inference-batch job [prod environment]
         run: |
           dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-model-inference-batch --environment=prod
-
-      # - name: Create Release
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      #   with:
-      #     tag_name: ${{ github.ref }}
-      #     release_name: ${{ github.ref }}
-      #     body: |
-      #       Release for version ${{ github.ref }}.
-      #     draft: false
-      #     prerelease: false
