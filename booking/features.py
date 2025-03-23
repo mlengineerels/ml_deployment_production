@@ -50,10 +50,6 @@ class Featurizer:
 
     def process_label(self, psdf: pyspark.pandas.DataFrame, rename_to: str = 'booking_status') -> pyspark.pandas.DataFrame:
         """
-        Convert label to int and rename label column
-        TODO: add test
-        
-        Parameters
         ----------
         psdf : pyspark.pandas.DataFrame
             pyspark.pandas DataFrame
@@ -66,7 +62,6 @@ class Featurizer:
         psdf[self.cfg.label_col] = psdf[self.cfg.label_col].map({'Canceled': 1, 'Not_Canceled': 0})
         psdf = psdf.astype({self.cfg.label_col: 'int32'})
         psdf = psdf.rename(columns={self.cfg.label_col: rename_to})
-
         return psdf
 
     @staticmethod

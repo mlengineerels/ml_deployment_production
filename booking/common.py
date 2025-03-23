@@ -1,11 +1,6 @@
-"""
-Module containing common data classes used throughout different pipelines, in addition to Workload class which is
-extended to run pipelines/tasks.
-"""
 import os
 import sys
 from dataclasses import dataclass
-
 import yaml
 import pathlib
 import dotenv
@@ -16,11 +11,24 @@ from typing import Dict, Any, Union, List
 from pyspark.sql import SparkSession
 
 
+def get_dbutils(
+    spark: SparkSession,
+):
+    try:
+        from pyspark.dbutils import DBUtils
+
+        if "dbutils" not in locals():
+            utils = DBUtils(spark)
+            return utils
+        else:
+            return locals().get("dbutils")
+    except ImportError:
+        return None
+
 @dataclass
 class MLflowTrackingConfig:
     """
     Configuration data class used to unpack MLflow parameters during a model training run.
-
     Attributes:
         run_name (str)
             Name of MLflow run
@@ -37,13 +45,10 @@ class MLflowTrackingConfig:
     experiment_id: int = None
     experiment_path: str = None
     model_name: str = None
-
-
 @dataclass
 class FeatureStoreTableConfig:
     """
     Configuration data class used to unpack parameters when creating or loading a Feature Store table.
-
     Attributes:
         database_name (str)
             Name of database to use for creating the feature table
@@ -57,13 +62,10 @@ class FeatureStoreTableConfig:
     table_name: str
     primary_keys: Union[str, List[str]]
     description: str = None
-
-
 @dataclass
 class LabelsTableConfig:
     """
     Configuration data class used to unpack parameters when creating or loading labels table.
-
     Attributes:
         database_name (str)
             Name of database to use for creating the labels table
@@ -81,18 +83,11 @@ class LabelsTableConfig:
     label_col: str
     primary_keys: Union[str, List[str]] = None
     dbfs_path: str = None
-
-
 class Workload(ABC):
     """
     This is an abstract class that provides handy interfaces to implement workloads (e.g. pipelines or job tasks).
     Create a child from this class and implement the abstract launch method.
     Class provides access to the following useful objects:
-    * self.spark is a SparkSession
-    * self.dbutils provides access to the DBUtils
-    * self.logger provides access to the Spark-compatible logger
-    * self.conf provides access to the parsed configuration of the job
-    * self.env_vars provides access to the parsed environment variables of the job
     """
     def __init__(self, spark=None, init_conf=None):
         self.spark = self._prepare_spark(spark)
@@ -211,13 +206,11 @@ class Workload(ABC):
         :return:
         """
         pass
-
-
 def get_dbutils(
     spark: SparkSession,
-):  # please note that this function is used in mocking by its name
+):
     try:
-        from pyspark.dbutils import DBUtils  # noqa
+        from pyspark.dbutils import DBUtils
 
         if "dbutils" not in locals():
             utils = DBUtils(spark)
