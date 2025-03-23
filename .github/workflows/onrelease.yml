@@ -43,8 +43,8 @@ jobs:
 
       - name: Deploy PROD-booking-initial-model-train-register job [prod environment]
         run: |
-          dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-initial-model-train-register --environment=prod
+          dbx deploy --deployment-file .github/workflows/deployment.yml --jobs=PROD-booking-initial-model-train-register --environment=prod
 
       - name: Deploy PROD-booking-model-inference-batch job [prod environment]
         run: |
-          dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-model-inference-batch --environment=prod
+          dbx deploy --deployment-file .github/workflows/deployment.yml --jobs=PROD-booking-model-inference-batch --environment=prod
