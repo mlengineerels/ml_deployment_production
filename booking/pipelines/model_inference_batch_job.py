@@ -38,7 +38,7 @@ class ModelInferenceJob(Workload):
         _logger.info(f'Running model-inference-batch in {self.env_vars["env"]} environment')
         ModelInference(model_uri=self._get_model_uri(),
                        input_table_name=self._get_input_table_name(),
-                       output_table_name=self._get_predictions_output_params().run_and_write_batch(mode=self.conf['data_output']['mode']))
+                       output_table_name=self._get_predictions_output_params()).run_and_write_batch(mode=self.conf['data_output']['mode'])
         _logger.info('Batch ModelInferenceJob job finished')
 
 
