@@ -6,7 +6,6 @@ import pandas as pd
 
 from booking.model_train_pipeline import ModelTrainPipeline
 
-
 class ModelTrainPipelineTest(unittest.TestCase):
 
     def test_create_train_pipeline_booking(self):
@@ -50,7 +49,6 @@ class ModelTrainPipelineTest(unittest.TestCase):
         pipeline.fit(X, y)
         y_pred = pipeline.predict(X)
 
-        # Assert that the predictions are binary values (0 or 1)
         self.assertTrue(np.all(np.isin(y_pred, [0, 1])))
 
 
