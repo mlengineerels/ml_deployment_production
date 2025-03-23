@@ -5,7 +5,14 @@ ML Deployment Production is an end-to-end machine learning operations (MLOps) so
 The use case at hand is a booking cancellation prediction problem. Here I will be using Airbnb dataset to build a simple classifier to predict whether a booking will be canclelled from a existing bookings. If the data set is not presnt with you please feel free to upload the mentioned Booking.csv file in the datalake or run the setup script inorder to kickstart the process of ingesting the data.
 
 ### Deployment Strategy
+
+![image](https://github.com/user-attachments/assets/c80c14d7-1f7b-4ade-8d43-17d70d74323f)
+
 The deployment strategy following in this project is Deploy Code pattern, ie Code for an ML project is developed in the development environment, and this code is then moved to the staging environment, where it is tested. Following successful testing, the project code is deployed to the production environment, where it is executed.Model training code is tested in the staging environment using a subset of data, and the model training pipeline is executed in the production environment.The model deployment process of validating a model and additionally conducting comparisons versus any existing production model all run within the production environment.
+
+
+
+
 
 **Security considerations:**
 - GitHub: Fine Grained Access Tocken: Repository is added to a FG token.
