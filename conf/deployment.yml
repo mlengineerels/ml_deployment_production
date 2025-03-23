@@ -51,6 +51,9 @@ environments:
     strict_path_adjustment_policy: true
     jobs:
       - name: 'STAGING-booking-sample-integration-test'
+        schedule:
+          quartz_cron_expression: "0 0 23 1 * ?"
+          timezone_id: "UTC"
         <<: *staging-cluster-config
         spark_python_task:
           python_file: 'file://tests/integration/sample_test.py'
@@ -82,6 +85,9 @@ environments:
                        '--env', 'file:fuse://conf/staging/.staging.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'STAGING-booking-model-inference-batch'
+        schedule:
+          quartz_cron_expression: "0 30 23 * * ?"
+          timezone_id: "UTC"
         <<: *prod-cluster-config
         spark_python_task:
           python_file: 'file://booking/pipelines/model_inference_batch_job.py'
@@ -122,7 +128,7 @@ environments:
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'PROD-booking-model-inference-batch'
         schedule:
-          quartz_cron_expression: "0 0 23 * * ?"
+          quartz_cron_expression: "0 30 23 * * ?"
           timezone_id: "UTC"
         <<: *prod-cluster-config
         spark_python_task:
