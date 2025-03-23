@@ -17,6 +17,7 @@ jobs:
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_STAGING_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_STAGING_TOKEN }}
+      CLUSTER_ID: ${{secrets.CLUSTER_ID}}
 
     steps:
       - uses: actions/checkout@v3
@@ -54,8 +55,8 @@ jobs:
 
       - name: Deploy STAGING-booking-initial-model-train-register job [STAGING environment]
         run: |
-          dbx deploy --deployment-file .github/workflows/deployment.yml --jobs=STAGING-booking-initial-model-train-register --environment=staging
+          dbx deploy --deployment-file conf/deployment.yml --jobs=STAGING-booking-initial-model-train-register --environment=staging
 
       - name: Deploy STAGING-booking-model-inference-batch job [STAGING environment]
         run: |
-          dbx deploy --deployment-file .github/workflows/deployment.yml --jobs=STAGING-booking-model-inference-batch --environment=staging
+          dbx deploy --deployment-file conf/deployment.yml --jobs=STAGING-booking-model-inference-batch --environment=staging
