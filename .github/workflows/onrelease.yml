@@ -17,8 +17,8 @@ jobs:
         python-version: [ 3.9 ]
 
     env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_PROD_HOST }}
-      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_PROD_TOKEN }}
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_STAGING_HOST }}
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_STAGING_TOKEN }}
 
     steps:
       - uses: actions/checkout@v3
@@ -40,27 +40,11 @@ jobs:
         run: |
           pip install -r unit-requirements.txt
 
-      - name: Deploy PROD-booking-model-train job [prod environment]
-        run: |
-          dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-model-train --environment=prod
 
-      - name: Deploy PROD-booking-model-deployment job [prod environment]
+      - name: Deploy PROD-booking-initial-model-train-register job [prod environment]
         run: |
-          dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-model-deployment --environment=prod
+          dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-initial-model-train-register --environment=prod
 
       - name: Deploy PROD-booking-model-inference-batch job [prod environment]
         run: |
-          dbx deploy --booking-file conf/deployment.yml --jobs=PROD-booking-model-inference-batch --environment=prod
-
-      # - name: Create Release
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      #   with:
-      #     tag_name: ${{ github.ref }}
-      #     release_name: ${{ github.ref }}
-      #     body: |
-      #       Release for version ${{ github.ref }}.
-      #     draft: false
-      #     prerelease: false
+          dbx deploy --deployment-file conf/deployment.yml --jobs=PROD-booking-model-inference-batch --environment=prod

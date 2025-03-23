@@ -51,3 +51,11 @@ jobs:
       - name: Run integration test [staging environment]
         run: |
           dbx launch --job=STAGING-booking-sample-integration-test --environment=staging --as-run-submit --trace
+
+      - name: Deploy STAGING-booking-initial-model-train-register job [STAGING environment]
+        run: |
+          dbx deploy --deployment-file conf/deployment.yml --jobs=STAGING-booking-initial-model-train-register --environment=staging
+
+      - name: Deploy STAGING-booking-model-inference-batch job [STAGING environment]
+        run: |
+          dbx deploy --deployment-file conf/deployment.yml --jobs=STAGING-booking-model-inference-batch --environment=staging

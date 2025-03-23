@@ -4,10 +4,11 @@ import pprint
 from pyspark.sql import DataFrame, SparkSession
 import pandas as pd
 import sklearn
+import mlflow
 from sklearn.model_selection import train_test_split
 from mlflow.models import infer_signature
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-
+from mlflow.tracking import MlflowClient
 from booking.common import MLflowTrackingConfig, FeatureStoreTableConfig, LabelsTableConfig
 from booking.model_train_pipeline import ModelTrainPipeline
 from booking.utils.logger_utils import get_logger
@@ -151,17 +152,9 @@ class ModelTrain:
 
     def run(self):
         """
-        Executes the model training process and logs all parameters, metrics, and artifacts to MLflow.
-        
-        Steps:
-          1. Set the MLflow experiment.
-          2. Start an MLflow run.
-          3. Read and join data from the feature delta table and labels table.
-          4. Create train/test splits.
-          5. Fit the sklearn pipeline.
-          6. Log the model using mlflow.sklearn.log_model.
-          7. Compute evaluation metrics manually and log them.
-          8. Optionally register the model in MLflow Model Registry.
+        Executes the model training process and logs all parameters, metrics, 
+        and artifacts to MLflow, then conditionally transitions the new version
+        to Production based on comparison with any existing Production version.
         """
         _logger.info('========== Running model training ==========')
         mlflow_tracking_cfg = self.cfg.mlflow_tracking_cfg
@@ -218,6 +211,50 @@ class ModelTrain:
             if mlflow_tracking_cfg.model_name is not None:
                 _logger.info('========== MLflow Model Registry ==========')
                 _logger.info(f'Registering model: {mlflow_tracking_cfg.model_name}')
-                mlflow.register_model(f'runs:/{mlflow_run.info.run_id}/model', name=mlflow_tracking_cfg.model_name)
+                register_result = mlflow.register_model(
+                    model_uri=f'runs:/{mlflow_run.info.run_id}/model',
+                    name=mlflow_tracking_cfg.model_name
+                )
+                new_model_version = register_result.version
+                client = MlflowClient()
+                _logger.info(f"Newly registered model version: v{new_model_version}")
+
+                model_versions = client.search_model_versions(f"name='{mlflow_tracking_cfg.model_name}'")
+
+                production_versions = [
+                    mv for mv in model_versions if mv.current_stage == "Production"
+                ]
+                new_model_run_metrics = client.get_run(mlflow_run.info.run_id).data.metrics
+                new_model_accuracy = new_model_run_metrics.get("test_accuracy", 0.0)
+
+                if len(production_versions) == 0:
+                    _logger.info("No existing Production model found. Promoting new model to Production.")
+                    client.transition_model_version_stage(
+                        name=mlflow_tracking_cfg.model_name,
+                        version=new_model_version,
+                        stage="Production",
+                        archive_existing_versions=False
+                    )
+                else:
+                    current_prod_version = sorted(production_versions, key=lambda mv: mv.last_updated_timestamp)[-1]
+                    current_prod_run_id = current_prod_version.run_id
+                    current_prod_metrics = client.get_run(current_prod_run_id).data.metrics
+                    current_prod_accuracy = current_prod_metrics.get("test_accuracy", 0.0)
+
+                    _logger.info(f"Current production model version: {current_prod_version.version}, "
+                                f"test_accuracy={current_prod_accuracy}")
+                    _logger.info(f"New model version: {new_model_version}, test_accuracy={new_model_accuracy}")
+
+                    if new_model_accuracy > current_prod_accuracy:
+                        _logger.info("New model is better; promoting to Production.")
+                        client.transition_model_version_stage(
+                            name=mlflow_tracking_cfg.model_name,
+                            version=new_model_version,
+                            stage="Production",
+                            archive_existing_versions=True
+                        )
+                    else:
+                        _logger.info("New model is not better; leaving current Production model as-is.")
 
         _logger.info('========== Model training completed ==========')
+
