@@ -45,7 +45,6 @@ Developers create pull requests (PRs) for changes. Automated unit and integratio
     - Cluster Management: The jobs use an existing Databricks cluster (specified via existing_cluster_id). When a scheduled job is triggered, the cluster will turn on if it is not already running.
     - MLflow Tracking & Model Registry: Each model training run logs experiments and registers models using MLflow. This ensures traceability and enables model promotion based on evaluation metrics.
 
-
 This workflow ensures that every code change is tested, integrated, and deployed in a structured manner, aligning with the repository's overall architecture for end-to-end ML model deployment.
 
 
