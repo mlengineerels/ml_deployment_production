@@ -225,7 +225,7 @@ class ModelTrain:
                     mv for mv in model_versions if mv.current_stage == "Production"
                 ]
                 new_model_run_metrics = client.get_run(mlflow_run.info.run_id).data.metrics
-                new_model_f1 = new_model_run_metrics.get("test_accuracy", 0.0)
+                new_model_accuracy = new_model_run_metrics.get("test_accuracy", 0.0)
 
                 if len(production_versions) == 0:
                     _logger.info("No existing Production model found. Promoting new model to Production.")
@@ -239,19 +239,19 @@ class ModelTrain:
                     current_prod_version = sorted(production_versions, key=lambda mv: mv.last_updated_timestamp)[-1]
                     current_prod_run_id = current_prod_version.run_id
                     current_prod_metrics = client.get_run(current_prod_run_id).data.metrics
-                    current_prod_f1 = current_prod_metrics.get("test_f1", 0.0)
+                    current_prod_accuracy = current_prod_metrics.get("test_accuracy", 0.0)
 
                     _logger.info(f"Current production model version: {current_prod_version.version}, "
-                                f"test_f1={current_prod_f1}")
-                    _logger.info(f"New model version: {new_model_version}, test_f1={new_model_f1}")
+                                f"test_accuracy={current_prod_accuracy}")
+                    _logger.info(f"New model version: {new_model_version}, test_accuracy={new_model_accuracy}")
 
-                    if new_model_f1 > current_prod_f1:
+                    if new_model_accuracy > current_prod_accuracy:
                         _logger.info("New model is better; promoting to Production.")
                         client.transition_model_version_stage(
                             name=mlflow_tracking_cfg.model_name,
                             version=new_model_version,
                             stage="Production",
-                            archive_existing_versions=False
+                            archive_existing_versions=True
                         )
                     else:
                         _logger.info("New model is not better; leaving current Production model as-is.")
