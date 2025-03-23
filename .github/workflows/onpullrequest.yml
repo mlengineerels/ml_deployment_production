@@ -17,7 +17,6 @@ jobs:
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_STAGING_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_STAGING_TOKEN }}
-      CLUSTER_ID: ${{secrets.CLUSTER_ID}}
 
     steps:
       - uses: actions/checkout@v3
