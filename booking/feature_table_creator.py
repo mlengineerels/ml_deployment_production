@@ -91,15 +91,6 @@ class FeatureTableCreator:
 
     def run_feature_table_create(self, df: pyspark.sql.DataFrame) -> None:
         """
-        Method to create feature table in Databricks Feature Store. When run, this method will create from scratch the
-        feature table. As such, we first create (if it doesn't exist) the database specified, and drop the table if it
-        already exists.
-
-        The feature table is created from the Spark DataFrame provided, dropping the label column if it exists in the
-        DataFrame. The label column cannot be present in the feature table when later constructing a feature store
-        training set from the feature table. The feature table will be created using the primary keys and description
-        proivided via feature_store_table_cfg.
-
         Parameters
         ----------
         df : pyspark.sql.DataFrame

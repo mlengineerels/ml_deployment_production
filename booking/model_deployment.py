@@ -31,8 +31,6 @@ class ModelDeploymentConfig:
     label_col: str = 'booking_status'
     comparison_metric: str = 'roc_auc_score'
     higher_is_better: bool = True
-
-
 class ModelDeployment:
     """
     Class to execute model deployment. This class orchestrates the comparison of the current Production model versus
