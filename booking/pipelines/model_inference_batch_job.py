@@ -28,6 +28,8 @@ class ModelInferenceJob(Workload):
         """
         predictions_table_database_name = self.env_vars['predictions_table_database_name']
         predictions_table_name = f'{predictions_table_database_name}.{self.env_vars["predictions_table_name"]}'
+        lookup_keys = f'{lookup_keys}.{self.env_vars["lookup_keys"]}
+        feature_table_name= f'{env_vars["feature_store_database_name"]}.{env_vars["feature_store_table_name"]}'
 
         return predictions_table_name
 
@@ -36,7 +38,7 @@ class ModelInferenceJob(Workload):
         _logger.info(f'Running model-inference-batch in {self.env_vars["env"]} environment')
         ModelInference(model_uri=self._get_model_uri(),
                        input_table_name=self._get_input_table_name(),
-                       output_table_name=self._get_predictions_output_params(), lookup_keys='Booking_Id',feature_table_name='booking_features')\
+                       output_table_name=self._get_predictions_output_params(), lookup_keys=lookup_keys,feature_table_name=feature_table_name)\
             .run_and_write_batch(mode=self.conf['data_output']['mode'])
         _logger.info('Batch ModelInferenceJob job finished')
 
