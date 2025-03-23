@@ -28,7 +28,7 @@ class ModelInferenceJob(Workload):
         """
         predictions_table_database_name = self.env_vars['predictions_table_database_name']
         predictions_table_name = f'{predictions_table_database_name}.{self.env_vars["predictions_table_name"]}'
-        lookup_keys = self.env_vars["lookup_keys"]
+        lookup_keys = self.env_vars["feature_store_table_primary_keys"]
         feature_table_name= self.env_vars["feature_store_table_name"]
 
         return predictions_table_name
