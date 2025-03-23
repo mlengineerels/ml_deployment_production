@@ -51,15 +51,16 @@ environments:
     strict_path_adjustment_policy: true
     jobs:
       - name: 'STAGING-booking-sample-integration-test'
-        schedule:
-          quartz_cron_expression: "0 0 23 1 * ?"
-          timezone_id: "UTC"
+
         <<: *staging-cluster-config
         spark_python_task:
           python_file: 'file://tests/integration/sample_test.py'
           parameters: ['--env', 'file:fuse://conf/staging/.staging.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/sample_test.yml']
       - name: 'STAGING-booking-initial-model-train-register'
+        schedule:
+          quartz_cron_expression: "0 0 23 1 * ?"
+          timezone_id: "UTC"
         tasks:
           - task_key: 'feature-table-creation'
             <<: *prod-cluster-config
