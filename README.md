@@ -1,24 +1,20 @@
 # ML Deployment Production 
 
-ML Deployment Production is an end-to-end machine learning operations (MLOps) solution that demonstrates how to deploy machine learning models into production using tools like Databricks, MLflow, and GitHub Actions. This repository includes pipelines for feature engineering, model training, evaluation, and automated deployment.
+ML Deployment Production is an end-to-end MLOps solution that demonstrates how to seamlessly deploy machine learning models into production using Databricks, Delta Lake, MLflow, and GitHub Actions. This repository includes pipelines for feature engineering, model training, evaluation, and automated deployment, integrating DataOps, ModelOps, and DevOps into a single, robust workflow.
 
 The use case at hand is a booking cancellation prediction problem. Here I will be using Airbnb dataset to build a simple classifier to predict whether a booking will be canclelled from a existing bookings. If the data set is not presnt with you please feel free to upload the mentioned Booking.csv file in the datalake or run the setup script inorder to kickstart the process of ingesting the data.
-
-### Deployment Strategy
-
-![image](https://github.com/user-attachments/assets/c80c14d7-1f7b-4ade-8d43-17d70d74323f)
-
-The deployment strategy following in this project is Deploy Code pattern, ie Code for an ML project is developed in the development environment, and this code is then moved to the staging environment, where it is tested. Following successful testing, the project code is deployed to the production environment, where it is executed.Model training code is tested in the staging environment using a subset of data, and the model training pipeline is executed in the production environment.The model deployment process of validating a model and additionally conducting comparisons versus any existing production model all run within the production environment.
-
-
-
-
 
 **Security considerations:**
 - GitHub: Fine Grained Access Tocken: Repository is added to a FG token.
 - Databricks: Admin tocken behind the environment
 - Databricks jobs will be automted using Service Principal
 - Databricks permissions: User Based for workspace, model, experiment and model.
+
+### Deployment Strategy
+
+![image](https://github.com/user-attachments/assets/c80c14d7-1f7b-4ade-8d43-17d70d74323f)
+
+The deployment strategy following in this project is Deploy Code pattern, ie Code for an ML project is developed in the development environment, and this code is then moved to the staging environment, where it is tested. Following successful testing, the project code is deployed to the production environment, where it is executed.Model training code is tested in the staging environment using a subset of data, and the model training pipeline is executed in the production environment.The model deployment process of validating a model and additionally conducting comparisons versus any existing production model all run within the production environment.
 
 ## End to End Architecture
 ![databricks](https://github.com/user-attachments/assets/3e00251e-6497-49d2-b385-81eba3f4df4d)
