@@ -5,16 +5,16 @@ ML Deployment Production is an end-to-end MLOps solution that demonstrates how t
 Leverage a comprehensive Airbnb dataset to build a powerful classifier that predicts whether a booking will be canceled. By proactively identifying high-risk reservations, you can optimize inventory management, enhance customer satisfaction, and streamline operations. If you don’t already have the dataset at hand, simply upload the Booking.csv file to your data lake to jumpstart data ingestion and get your predictive pipeline up and running.
 
 **Security considerations:**
-- GitHub: Fine Grained Access Tocken: Repository is added to a FG token.
-- Databricks: Admin tocken behind the environment
-- Databricks jobs will be automted using Service Principal
-- Databricks permissions: User Based for workspace, model, experiment and model.
+- GitHub: Fine-Grained Access Tocken: Repository is added to an FG token.
+- Databricks: Admin token behind the environment
+- Databricks jobs will be automated using Service Principal
+- Databricks permissions: User Based on workspace, model, experiment, and model.
 
 ### Deployment Strategy
 
 ![image](https://github.com/user-attachments/assets/c80c14d7-1f7b-4ade-8d43-17d70d74323f)
 
-The deployment strategy following in this project is Deploy Code pattern, ie Code for an ML project is developed in the development environment, and this code is then moved to the staging environment, where it is tested. Following successful testing, the project code is deployed to the production environment, where it is executed.Model training code is tested in the staging environment using a subset of data, and the model training pipeline is executed in the production environment.The model deployment process of validating a model and additionally conducting comparisons versus any existing production model all run within the production environment. (Here we will be having dev/stage/prod environmentw in a single workspace saperated in a folder hierarchy)
+The deployment strategy following in this project is the Deploy Code pattern, ie Code for an ML project is developed in the development environment, and this code is then moved to the staging environment, where it is tested. Following successful testing, the project code is deployed to the production environment, where it is executed. Model training code is tested in the staging environment using a subset of data, and the model training pipeline is executed in the production environment. The model deployment process of validating a model and additionally conducting comparisons versus any existing production model all run within the production environment. (Here we will be having a dev/stage/prod environment in a single workspace separated by a folder hierarchy)
 
 ## End to End Architecture
 ![databricks](https://github.com/user-attachments/assets/3e00251e-6497-49d2-b385-81eba3f4df4d)
@@ -63,3 +63,8 @@ Developers create pull requests (PRs) for changes. Automated unit and integratio
     - MLflow Tracking & Model Registry: Each model training run logs experiments and registers models using MLflow. This ensures traceability and enables model promotion based on evaluation metrics.
 
 This workflow ensures that every code change is tested, integrated, and deployed in a structured manner, aligning with the repository's overall architecture for end-to-end ML model deployment.
+
+#### Deployed production Deliverables:
+      - Production Databricks Jobs: https://adb-4004511372084821.1.azuredatabricks.net/jobs/225946478137713?o=4004511372084821
+      - Experiments: https://adb-4004511372084821.1.azuredatabricks.net/ml/experiments/3378579225337397/runs/f0eaa454b66249b6a7869f2c3a444ac9?o=4004511372084821
+      - Model Registry: https://adb-4004511372084821.1.azuredatabricks.net/ml/models/booking_prediction_production?o=4004511372084821
