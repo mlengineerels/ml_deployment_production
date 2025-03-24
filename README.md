@@ -65,6 +65,7 @@ Developers create pull requests (PRs) for changes. Automated unit and integratio
 This workflow ensures that every code change is tested, integrated, and deployed in a structured manner, aligning with the repository's overall architecture for end-to-end ML model deployment.
 
 #### Deployed production Deliverables:
-      - Production Databricks Jobs: https://adb-4004511372084821.1.azuredatabricks.net/jobs/225946478137713?o=4004511372084821
-      - Experiments: https://adb-4004511372084821.1.azuredatabricks.net/ml/experiments/3378579225337397/runs/f0eaa454b66249b6a7869f2c3a444ac9?o=4004511372084821
-      - Model Registry: https://adb-4004511372084821.1.azuredatabricks.net/ml/models/booking_prediction_production?o=4004511372084821
+
+- **Production Databricks Jobs:** [Link to Jobs](https://adb-4004511372084821.1.azuredatabricks.net/jobs/225946478137713?o=4004511372084821)
+- **Experiments:** [Link to Experiments](https://adb-4004511372084821.1.azuredatabricks.net/ml/experiments/3378579225337397/runs/f0eaa454b66249b6a7869f2c3a444ac9?o=4004511372084821)
+- **Model Registry:** [Link to Model Registry](https://adb-4004511372084821.1.azuredatabricks.net/ml/models/booking_prediction_production?o=4004511372084821)
