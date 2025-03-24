@@ -24,9 +24,12 @@ The deployment strategy following in this project is Deploy Code pattern, ie Cod
 This repository implements a MLOps pipeline with the following components:
 
 - **Feature Engineering:** Leverages Apache Spark on Databricks to process data and prepare features & labels. tables that are stored as delta tables.
-- **Model Training & Evaluation:** Uses scikit-learn to build classification models, with experiment tracking and model registration handled by MLflow.
+- **Model Training & Evaluation:** Uses sci-kit-learn to build classification models, with experiment tracking and model registration handled by MLflow.
 - **Automated Deployment:** Integrates with GitHub Actions to provide continuous integration and deployment (CI/CD) workflows and Jobs are scheduled for production environments.
-- **Flexible Configuration:** Pipeline configurations are defined via YAML files and can be adjusted for development, staging, and production environments.
+- **Flexible Configuration:** All pipeline configurations are defined in YAML files, enabling the same codebase to adapt seamlessly across development, staging, and production environments. By adjusting the YAML parameters, it becomes straightforward to tailor table names, model storage paths, pipeline inputs, and other job-specific settings without altering core code.
+      -  Each environment reads parameters from its corresponding YAML file, ensuring consistency and preventing drift.  The conf/deployment.yml file defines how and when jobs are executed, including scheduling and dependencies among tasks.
+      -  This approach unifies multiple pipelines—such as data ingestion, feature engineering, model training, and inference—under a single deployment configuration. By specifying cron schedules or other triggers, jobs can run on a set cadence (e.g., daily, hourly) without manual intervention.
+
 
 ## Pipelines
 
@@ -36,7 +39,7 @@ The following pipelines currently defined within the package and will be deploye
 
 - _model-train: Harness the power of a scikit-learn Random Forest to automatically train and register the trained model at MLFlow Model Registry. If a previous version exists, the pipeline seamlessly compares performance and promotes only the best model to Production—ensuring your deployed model is always the top performer.
 
-- _model-inference-batch_: Load a model from MLflow Model Registry, load features from Feature table at delta lake, score batch and write the results back in delta lake.
+- _model-inference-batch_: Load a model from MLflow Model Registry, load features from the Feature table at Delta Lake, score batch, and write the results back in Delta Lake.
 
 ## Workflow
 The CI/CD workflow is designed based on the end-to-end architecture of the MLOps pipeline:
@@ -44,7 +47,7 @@ The CI/CD workflow is designed based on the end-to-end architecture of the MLOps
 #### Development & Integration:
 
 - **Pull Requests & Testing:**
-Developers create pull requests (PRs) for changes. Automated unit and integration tests run via GitHub Actions on every PR, ensuring code quality during stage env. In here I have also replicated entire production scenario in the stage to ensure the checkboxes of integration.
+Developers create pull requests (PRs) for changes. Automated unit and integration tests run via GitHub Actions on every PR, ensuring code quality during stage env. Here I have also replicated the entire production scenario in the stage to ensure the checkboxes of integration.
 
 - **Branch Merging:** PRs are merged into the main branch once tests pass, triggering deployment workflows.
 
