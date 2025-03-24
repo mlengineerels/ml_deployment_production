@@ -13,7 +13,6 @@ dist
 venv
 
 # Unit test / coverage reports
-.coverage
 coverage.xml
 junit/*
 htmlcov/*
@@ -30,9 +29,6 @@ htmlcov/*
 
 # MacOS
 .DS_Store
-
-# Databricks eXtensions
-.dbx/lock.json
 
 # local mlflow files
 mlruns/
