@@ -80,13 +80,11 @@ class ModelInference:
         joined_df = df.join(feature_df, on=self.lookup_keys, how='inner')
 
         _logger.info(f"Loading model from MLflow as a Spark UDF: {self.model_uri}")
-        # Load model as PyFunc UDF; make sure to specify output data type (DoubleType here as an example).
         pyfunc_udf = mlflow.pyfunc.spark_udf(
             spark,
             model_uri=self.model_uri,
             result_type=DoubleType()
         )
-
         # ------------------------------------------------------------
         # Identify the exact columns the model expects, in the order
         # it expects them. For illustration, we assume all columns
