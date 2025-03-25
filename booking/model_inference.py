@@ -1,9 +1,6 @@
 import pyspark.sql.dataframe
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
-from pyspark.sql.types import DoubleType
 import mlflow
-import mlflow.pyfunc
 from booking.utils.logger_utils import get_logger
 
 _logger = get_logger()
@@ -18,19 +15,12 @@ class ModelInference:
     joining with feature data from a Delta table based on lookup keys.
     The results are written to the output table if specified.
     """
-    def __init__(
-        self, 
-        model_uri: str, 
-        input_table_name: str, 
-        feature_table_name: str, 
-        lookup_keys: list, 
-        output_table_name: str = None
-    ):
+    def __init__(self, model_uri: str, input_table_name: str, feature_table_name: str, lookup_keys: list, output_table_name: str = None):
         """
         Parameters
         ----------
         model_uri : str
-            MLflow model URI. The model must have been logged using mlflow.sklearn.log_model or as a pyfunc.
+            MLflow model URI. The model must have been logged using mlflow.sklearn.log_model.
         input_table_name : str
             Table name to load as a Spark DataFrame containing lookup keys for joining feature data.
         feature_table_name : str
@@ -61,7 +51,7 @@ class ModelInference:
     def score_batch(self, df: pyspark.sql.dataframe.DataFrame) -> pyspark.sql.dataframe.DataFrame:
         """
         Joins the input DataFrame with the feature table on lookup keys, loads the model from MLflow,
-        and applies it to perform predictions using an MLflow pyfunc Spark UDF.
+        and applies it to perform predictions.
         
         Parameters
         ----------
@@ -71,7 +61,7 @@ class ModelInference:
         Returns
         -------
         pyspark.sql.dataframe.DataFrame
-            A Spark DataFrame with all original columns plus an added 'prediction' column.
+            A Spark DataFrame with all original columns and an added 'prediction' column.
         """
         _logger.info(f"Loading feature table: {self.feature_table_name}")
         feature_df = spark.table(self.feature_table_name)
@@ -79,28 +69,20 @@ class ModelInference:
         _logger.info(f"Joining input DataFrame with feature table on keys: {self.lookup_keys}")
         joined_df = df.join(feature_df, on=self.lookup_keys, how='inner')
 
-        _logger.info(f"Loading model from MLflow as a Spark UDF: {self.model_uri}")
-        pyfunc_udf = mlflow.pyfunc.spark_udf(
-            spark,
-            model_uri=self.model_uri,
-            result_type=DoubleType()
-        )
-        # ------------------------------------------------------------
-        # Identify the exact columns the model expects, in the order
-        # it expects them. For illustration, we assume all columns
-        # except the lookup keys are needed for prediction.
-        # Adjust as necessary to match your training columns/ordering.
-        # ------------------------------------------------------------
-        feature_columns = [c for c in joined_df.columns if c not in self.lookup_keys]
+        _logger.info("Converting joined DataFrame to pandas for scoring")
+        pandas_df = joined_df.toPandas()
 
-        _logger.info("Applying the MLflow pyfunc UDF to perform predictions in Spark")
-        # Pass the feature columns to the UDF in the exact order the model was trained on
-        predicted_df = joined_df.withColumn(
-            "prediction",
-            pyfunc_udf(*[col(c) for c in feature_columns])
-        )
+        _logger.info(f"Loading model from MLflow: {self.model_uri}")
+        model = mlflow.sklearn.load_model(self.model_uri)
 
-        return predicted_df
+        _logger.info("Performing predictions using the loaded model")
+        predictions = model.predict(pandas_df)
+
+        _logger.info("Appending predictions to the DataFrame")
+        pandas_df['prediction'] = predictions
+
+        _logger.info("Converting pandas DataFrame back to Spark DataFrame")
+        return spark.createDataFrame(pandas_df)
 
     def run_batch(self) -> pyspark.sql.dataframe.DataFrame:
         """

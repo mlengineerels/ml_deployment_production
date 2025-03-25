@@ -59,7 +59,7 @@ environments:
                        '--conf-file', 'file:fuse://conf/pipeline_configs/sample_test.yml']
       - name: 'STAGING-booking-initial-model-train-register'
         schedule:
-          quartz_cron_expression: "0 0 23 1 * ?"
+          quartz_cron_expression: "0 0 5 1 * ?"
           timezone_id: "UTC"
         tasks:
           - task_key: 'feature-table-creation'
@@ -87,7 +87,7 @@ environments:
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'STAGING-booking-model-inference-batch'
         schedule:
-          quartz_cron_expression: "0 30 23 * * ?"
+          quartz_cron_expression: "0 0 5 * * ?"
           timezone_id: "UTC"
         <<: *prod-cluster-config
         spark_python_task:
@@ -101,7 +101,7 @@ environments:
     jobs:
       - name: 'PROD-booking-initial-model-train-register'
         schedule:
-          quartz_cron_expression: "0 0 23 1 * ?"
+          quartz_cron_expression: "0 0 6 1 * ?"
           timezone_id: "UTC"
         tasks:
           - task_key: 'feature-table-creation'
@@ -129,7 +129,7 @@ environments:
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
       - name: 'PROD-booking-model-inference-batch'
         schedule:
-          quartz_cron_expression: "0 30 23 * * ?"
+          quartz_cron_expression: "0 30 6 * * ?"
           timezone_id: "UTC"
         <<: *prod-cluster-config
         spark_python_task:
